@@ -460,8 +460,16 @@ Here is an example query which fetches all information about all G-UNI Positions
           manager
           address
           uniswapPool
-          token0
-          token1
+          token0 {
+            address
+            name
+            symbol
+          }
+          token1 { 
+            address
+            name
+            symbol
+          }
           feeTier
           liquidity
           lowerTick
