@@ -7,6 +7,12 @@ description: >-
 
 # Documentation
 
+## Contribute to the docs
+
+Feel free to help improving the docs by doing a PR to this repo:
+
+{% embed url="https://github.com/gelatodigital/g-uni-docs" %}
+
 ## Introduction
 
 G-UNI is a generic ERC20 wrapper on a Uniswap V3 Position. Pools with any price bounds on any Uniswap V3 pair can be deployed via the `GUniFactory` instantiating a tokenized V3 Position. When liquidity is added into the pool, G-UNI tokens are minted and credited to the provider. Inversely, G-UNI tokens can be burned to redeem that proportion of the pool's V3 position liquidity and fees earned. Thus, G-UNI tokens represent proportional ownership (or "shares") of the underlying Uniswap V3 position. Similar to the Uniswap V2 LP experience, anyone can add liquidity to or remove liquidity from a G-UNI Pool, and can earn their portion of the fees generated just by holding the fungible tokens.\
@@ -45,17 +51,17 @@ Arguments:
 
 {% hint style="info" %}
 The `lowerTick` and `upperTick`:\
-1\. MUST be set to integers between -887272 and 887272 where `upperTick > lowerTick ` \
-2\. MUST be integers divisible by the tickSpacing of the Uniswap pair.&#x20;
+1\. MUST be set to integers between -887272 and 887272 where `upperTick > lowerTick`\
+2\. MUST be integers divisible by the tickSpacing of the Uniswap pair.
 {% endhint %}
 
-Returns: Address of newly deployed G-UNI Pool ERC20 contract (proxied). \
+Returns: Address of newly deployed G-UNI Pool ERC20 contract (proxied).\
 \
 To have full verification and functionality on etherscan (read/write methods) [verify the proxy contract](https://etherscan.io/proxyContractChecker). Etherscan will recognize the contract address as an ERC20 token and generate the token page after minting of the first G-UNI tokens.
 
 ## GUniRouter02
 
-The GUniRouter02 [smart contract](https://etherscan.io/address/0x14e6d67f824c3a7b4329d3228807f8654294e4bd#code) exposes methods for adding liquidity to and removing liquidity from any G-UNI Pool. It supports a number of different methods for these operations. _Router operations require the router address to be approved to spend the tokens forwarded by _ `msg.sender`
+The GUniRouter02 [smart contract](https://etherscan.io/address/0x14e6d67f824c3a7b4329d3228807f8654294e4bd#code) exposes methods for adding liquidity to and removing liquidity from any G-UNI Pool. It supports a number of different methods for these operations. \_Router operations require the router address to be approved to spend the tokens forwarded by \_ `msg.sender`
 
 ### addLiquidity
 
@@ -150,7 +156,7 @@ Returns:
 * `mintAmount` amount of G-UNI tokens minted
 
 {% hint style="info" %}
-In this operation the router transfers`amount0In` and`amount1In` from user and performs a swap before depositing into the G-UNI Pool. Based on the swap parameters and the current prices relative to the position, proportion of token0 and token1 may not be perfect after the swap. Any leftover tokens after maximal deposit will be returned to the `msg.sender `
+In this operation the router transfers`amount0In` and`amount1In` from user and performs a swap before depositing into the G-UNI Pool. Based on the swap parameters and the current prices relative to the position, proportion of token0 and token1 may not be perfect after the swap. Any leftover tokens after maximal deposit will be returned to the `msg.sender`
 {% endhint %}
 
 {% hint style="info" %}
@@ -378,7 +384,7 @@ Arguments:
 In order to generate the parameters for an executive rebalance one has to understand the flow of this operation. First, the GUNiPool removes all the liquidity and fees earned. Then, it tries to deposit as much liquidity as possible around the new price range. Next, whatever is leftover is then swapped based on the swap parameters. Finally, another deposit of maximal liquidity to the position is attempted and any leftover sits in the contract balance waiting to be reinvested.
 
 {% hint style="info" %}
-To generate the swap parameters for an executive rebalance tx, simulate the entire operation and use the `getRebalanceParams` of the GUniResolver. It works like this: \
+To generate the swap parameters for an executive rebalance tx, simulate the entire operation and use the `getRebalanceParams` of the GUniResolver. It works like this:\
 1\. Call `getUnderlyingBalances` on the GUniPool.\
 2\. Compute the amount of leftover after depositing the maximum of these underlying balances into the new range (use Uniswap LiquidityAmounts.sol library to figure out maximal deposit)\
 3\. Pass the leftover amounts as amount0In and amount1In to the GUniResolver's `getRebalanceParams` to generate the zeroForOne, swapThreshold and swapAmount vars.\
@@ -404,7 +410,7 @@ Another important role of the `manager` is to configure the parameters that rest
 Arguments:
 
 * `newRebalanceBPS` The maximum percentage the auto fee reinvestment transaction cost can be compared to the fees earned in that feeToken. The percentage is given in Basis Points (where 10000 mean 100%). Example: if rebalanceBPS is 200 and the transaction fee is 10 USDC then the fees earned in USDC must be 500 UDSC or the transaction will revert.
-* `newWithdrawBPS` The maximum percentage the auto withdraw transaction fee can be compared to the amount withdrawn of that feeToken.&#x20;
+* `newWithdrawBPS` The maximum percentage the auto withdraw transaction fee can be compared to the amount withdrawn of that feeToken.
 * `newSlippageBPS` The maximum percentage that the rebalance slippage can be from the TWAP.
 * `newSlippageInterval` length of time in seconds for to compute the TWAP (time weighted average price). I.e. 300 means a 5 minute average price for the pool.
 * `newTreasury` The treasury address where manager fees are auto withdrawn.
@@ -511,7 +517,7 @@ Here is an example query which fetches all information about all G-UNI Positions
 \
 The `supplySnapshots`, `feeSnapshots`, and `lastTouchWithoutFees` can be ingested together to produce an estimated APR for fees generated by the position.\
 \
-APR is calculated from these values in the following way: \
+APR is calculated from these values in the following way:\
 \
 1\. We use the `supplySnapshots` to calculate the time weighted average value of reserves `Vr` since the block when we started tracking fees (`lastTouchWithoutFees`). This value includes all fees earned.
 
@@ -520,8 +526,7 @@ APR is calculated from these values in the following way: \
 3\. We compute APR as `Vf / (Vr - Vf)` (when `Vr > Vf` ). In rare cases when `Vf > Vr` i.e. feesEarned are larger than the time weighted average reserves, one can simply use`Vf/Vr`
 
 An npm library for these APR calculations is forthcoming but an example of the calculation is here: [https://github.com/kassandraoftroy/apr-script/blob/main/index.ts](https://github.com/superarius/apr-script/blob/main/index.ts)\
-\
-
+\\
 
 ## GUniPool
 
@@ -559,7 +564,7 @@ The `GUniPool` [smart contract](https://etherscan.io/address/0x6dfc8b880d6c1043b
 
 ### getMintAmounts
 
-View method to compute the amount of G-UNI tokens minted (and exact amounts of token0 and token1 forwarded) from and `amount0Max` and `amount1Max`&#x20;
+View method to compute the amount of G-UNI tokens minted (and exact amounts of token0 and token1 forwarded) from and `amount0Max` and `amount1Max`
 
 ```bash
     function getMintAmounts(uint256 amount0Max, uint256 amount1Max)
@@ -589,7 +594,7 @@ get the current underlying balances of the entire G-UNI Pool
 
 ### getUnderlyingBalancesAtPrice
 
-Get the current underlying balances given a custom price (not simply taking the current Uniswap price which can be manipulated).&#x20;
+Get the current underlying balances given a custom price (not simply taking the current Uniswap price which can be manipulated).
 
 ```bash
     function getUnderlyingBalancesAtPrice(
@@ -616,4 +621,4 @@ get the Identifier of the G-UNI position on the Uniswap V3 pair (useful for fetc
 
 ## Contact
 
-Questions about integrating G-UNI? Join the Gelato [Telegram](https://t.me/therealgelatonetwork) or [Discord](https://discord.gg/ApbA39BKyJ) and find a dev or community manager to talk to!  Email team@gelato.digital.
+Questions about integrating G-UNI? Join the Gelato [Telegram](https://t.me/therealgelatonetwork) or [Discord](https://discord.gg/ApbA39BKyJ) and find a dev or community manager to talk to! Email team@gelato.digital.
