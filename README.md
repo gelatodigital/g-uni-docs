@@ -17,11 +17,11 @@ Feel free to help improving the docs by doing a PR to this repo:
 
 G-UNI is a generic ERC20 wrapper on a Uniswap V3 Position. Pools with any price bounds on any Uniswap V3 pair can be deployed via the `GUniFactory` instantiating a tokenized V3 Position. When liquidity is added into the pool, G-UNI tokens are minted and credited to the provider. Inversely, G-UNI tokens can be burned to redeem that proportion of the pool's V3 position liquidity and fees earned. Thus, G-UNI tokens represent proportional ownership (or "shares") of the underlying Uniswap V3 position. Similar to the Uniswap V2 LP experience, anyone can add liquidity to or remove liquidity from a G-UNI Pool, and can earn their portion of the fees generated just by holding the fungible tokens.\
 \
-There are two privileged roles assigned to a G-UNI Pool by default: `Gelato Network Executors` and `Manager` (see the `Authorized Manager Functions` section).
+Some G-UNI pools may have a special privileged `manager` role (see the `createManagedPool` and  `Manager Functions` sections).
 
 ## GUniFactory
 
-The `GUniFactory`[ smart contract](https://etherscan.io/address/0xea1aff9dbffd1580f6b81a3ad3589e66652db7d9) governs over the creation of G-UNI Pools. In theory, any account or smart contract can create a G-UNI Pool via the factory by calling `createPool` (in practice pool creation should be done with care by experienced parties)
+The `GUniFactory`[ smart contract](https://etherscan.io/address/0xea1aff9dbffd1580f6b81a3ad3589e66652db7d9) governs over the creation of G-UNI Pools. In theory, any account or smart contract can create a G-UNI Pool via the factory by calling `createPool`. This creates a tokenized UniswapV3 Position with a given immutable price range on the token pair and fee tier of your choice. Anyone can now participate as an LP in that range, by adding liquidity into this position and minting G-UNI tokens.
 
 ### createPool
 
@@ -30,6 +30,40 @@ Deploy a G-UNI Pool on the Uniswap V3 pair and with the Position parameters of y
 {% code title="GUniFactory.sol" %}
 ```bash
     function createPool(
+        address tokenA,
+        address tokenB,
+        uint24 uniFee,
+        int24 lowerTick,
+        int24 upperTick
+    ) external returns (address pool)
+```
+{% endcode %}
+
+Arguments:
+
+* `tokenA` One of the tokens in the Uniswap V3 pair
+* `tokenB` The other token in the Uniswap V3 pair
+* `uniFee` Fee tier of the Uniswap V3 pair (500, 3000, 10000)
+* `lowerTick` Initial lower price bound for the position, represented as a Uniswap V3 tick.
+* `upperTick` Initial upper price bound for the position, represented as a Uniswap V3 tick.
+
+{% hint style="info" %}
+The `lowerTick` and `upperTick`:\
+1\. MUST be set to integers between -887272 and 887272 where `upperTick > lowerTick`\
+2\. MUST be integers divisible by the tickSpacing of the Uniswap pair.
+{% endhint %}
+
+Returns: Address of newly deployed G-UNI Pool ERC20 contract (proxied).\
+\
+To have full verification and functionality on etherscan (read/write methods) [verify the proxy contract](https://etherscan.io/proxyContractChecker). Etherscan will recognize the contract address as an ERC20 token and generate the token page after minting of the first G-UNI tokens.
+
+### createManagedPool&#x20;
+
+The simplest type of G-UNI pool to create is via the `createPool` method above, which creates an immutable G-UNI pool that no account has special privileges for. If you create a pool via the [sorbet UI](https://sorbet.finance) this is indeed the type of pool you create. However G-UNI pools are further customizable and can be used to implement tokenized _dynamic strategies _on top of Uniswap V3. To do this one needs to create a "managed" G-UNI pool, which creates a pool with a privileged manager role with the ability to `executiveRebalance` the position moving the liquidity to a new range on that Uniswap V3 token pair. Via this manager functionality arbitrary rebalancing strategies can be implemented.
+
+{% code title="GUniFactory.sol" %}
+```
+    function createManagedPool(
         address tokenA,
         address tokenB,
         uint24 uniFee,
@@ -45,19 +79,9 @@ Arguments:
 * `tokenA` One of the tokens in the Uniswap V3 pair
 * `tokenB` The other token in the Uniswap V3 pair
 * `uniFee` Fee tier of the Uniswap V3 pair (500, 3000, 10000)
-* `managerFee` The proportion of fees earned that `manager` takes as a cut in Basis Points (deployer address is initial manager). **Note: The managerFee can only be set to a non-zero value once (immutable afterwards)**
+* `managerFee` The proportion of fees earned that `manager` takes as a cut in Basis Points (deployer address is initial manager). **Note: The managerFee can only be set to a non-zero value once (immutable afterwards)**&#x20;
 * `lowerTick` Initial lower price bound for the position, represented as a Uniswap V3 tick.
 * `upperTick` Initial upper price bound for the position, represented as a Uniswap V3 tick.
-
-{% hint style="info" %}
-The `lowerTick` and `upperTick`:\
-1\. MUST be set to integers between -887272 and 887272 where `upperTick > lowerTick`\
-2\. MUST be integers divisible by the tickSpacing of the Uniswap pair.
-{% endhint %}
-
-Returns: Address of newly deployed G-UNI Pool ERC20 contract (proxied).\
-\
-To have full verification and functionality on etherscan (read/write methods) [verify the proxy contract](https://etherscan.io/proxyContractChecker). Etherscan will recognize the contract address as an ERC20 token and generate the token page after minting of the first G-UNI tokens.
 
 ## GUniRouter02
 
@@ -314,48 +338,11 @@ Returns:
 Because the price ratio often changes depending on the amount being swapped (slippage) you may want to call this method twice - first with a "reasonable guess" `price18Decimals` to get a preliminary `swapAmount`, then get a more accurate `price18Decimals` (using this `swapAmount` as input), and finally call this method again with the more accurate price to get a final and more precise `swapAmount`
 {% endhint %}
 
-## Authorized Manager Functions
+## Manager Functions
 
-There are two distinct accounts with privileged roles for any G-UNI Pool: one is `Gelato Executors` these are Gelato Network Bots handling automated managerial tasks on the pool (fee reinvestments, manager fee collection). The other is a `manager` account who can configure the Gelato Executor meta-parameters and also can control and alter the range of the underlying Uniswap V3 position.
+Pools created with `createManagedPool` are assigned a `manager` account who can configure the Gelato Executor meta-parameters and also can control and alter the range of the underlying Uniswap V3 position.
 
-### Gelato Executor (automated)
-
-The Gelato Network is a decentralized bot infrastructure for trustless automated execution of smart contracts based on arbitrary conditions. Essentially, Gelato bots (executors) allow anyone to schedule automated future transactions, without needing to run any bot infrastructure themselves or trust a single central party to do so. Gelato Executors are responsible for executing scheduled tasks when specified conditions are met. One such Gelato Task is to reinvest fees of any G-UNI Pool once the cost in gas for the transaction is less than X% of the transaction fee (as specified by `gelatoRebalanceBPS`). Gelato Network also earns a hardcoded 1% commission on all fees earned for this automated fee-reinvestment service.
-
-#### rebalance
-
-The rebalance function is only callable by `Gelato Executors` and invests any fees earned into the G-UNI Pool's underlying position.
-
-{% code title="GUniPool.sol" %}
-```bash
-    function rebalance(
-        uint160 swapThresholdPrice,
-        uint256 swapAmountBPS,
-        bool zeroForOne,
-        uint256 feeAmount,
-        address paymentToken
-    ) external gelatofy(feeAmount, paymentToken)
-```
-{% endcode %}
-
-The rebalance function includes swap parameters because the fees earned may not be in the correct proportion of token0 and token1 to deposit maximum liquidity into the position. While executor bots set these parameters from off chain they cannot extract value from the swap because the slippage parameter is checked on chain against the TWAP to ensure it is not a malicious slippage value intended to extract value via front/back running. Similarly the fee parameter to repay gas costs is checked against on chain gas usage and acceptable gas prices (via an oracle) to make sure fees charged are legitimate and not somehow malicious.
-
-#### withdrawManagerBalance
-
-```bash
-    function withdrawManagerBalance(
-        uint256 feeAmount,
-        address feeToken
-    )
-        external
-        gelatofy(feeAmount, feeToken)
-```
-
-This function auto withdraws the manager balance to the manager address when enough tokens have been earned (as specified by `gelatoWithdrawBPS` )
-
-### Manager
-
-The manager is the most important and centrally trusted role in the GUniPool. It is the only role that has the power to potentially extract value from the principal invested or potentially grief the pool in a number of ways. One should only put funds into pools where the manager is either known and trusted, a decentralized or democratically controlled smart contract, or renounced altogether (renouncing the manager makes the Pool fully trustless but also the underlying position range immutable).
+The manager is the most important and centrally trusted role in the GUniPool. It is the only role that has the power to potentially extract value from the principal invested or potentially grief the pool in a number of ways. One should only put funds into "managed" pools if they have some information about the manager account: manager could be fully controlled by a DAO (token voting), or could simply be a project's multi-sig, or be locked in a smart contract that automates rebalances under a certain codified strategy, or be trusted by the user for some other reason.
 
 #### executiveRebalance
 
@@ -384,11 +371,21 @@ Arguments:
 In order to generate the parameters for an executive rebalance one has to understand the flow of this operation. First, the GUNiPool removes all the liquidity and fees earned. Then, it tries to deposit as much liquidity as possible around the new price range. Next, whatever is leftover is then swapped based on the swap parameters. Finally, another deposit of maximal liquidity to the position is attempted and any leftover sits in the contract balance waiting to be reinvested.
 
 {% hint style="info" %}
-To generate the swap parameters for an executive rebalance tx, simulate the entire operation and use the `getRebalanceParams` of the GUniResolver. It works like this:\
-1\. Call `getUnderlyingBalances` on the GUniPool.\
-2\. Compute the amount of leftover after depositing the maximum of these underlying balances into the new range (use Uniswap LiquidityAmounts.sol library to figure out maximal deposit)\
-3\. Pass the leftover amounts as amount0In and amount1In to the GUniResolver's `getRebalanceParams` to generate the zeroForOne, swapThreshold and swapAmount vars.\
-4\. Compute the swapAmountBPS from swapAmount with the formula: `swapAmount * 10000 / leftoverAmount` in the swap token.
+To generate the swap parameters for an executive rebalance tx, simulate the entire operation. It works like this:
+
+\
+1\. Call `getUnderlyingBalances` on the GUniPool to obtain `amount0Current` and `amount1Current`\
+2\. Compute `amount0Liquidity` and `amount1Liquidity` using LiquidityAmounts.sol library, the new position bounds, the current price and the current amounts from step 1.
+
+3\. Compute `amount0Leftover` and `amount1Leftover` with formula `amount0Leftover = amount0Current - amount0Liquidity`. In most cases one of these values will be 0 (or very close to 0).\
+4\. Use `amount0Liquidity` and `amount1Liquidity` to compute the current proportion of each asset needed.\
+5\. Use the `amount0Leftover` and `amount1Leftover` and the proportion from previous step to compute which token to swap and the swapAmount.
+
+6\. Convert swapAmount to swapAmountBPS by doing `swapAmount * 10000 / amountLeftover` for the token being swapped.
+
+
+
+A complete example of this calculation can be found in this [test file](https://github.com/gelatodigital/g-uni-v1-core/blob/feat/executive-rebalance-test/test/GUniPool.test.ts)
 {% endhint %}
 
 #### updateGelatoParams
@@ -482,7 +479,6 @@ Here is an example query which fetches all information about all G-UNI Positions
           upperTick
           totalSupply
           positionId
-          lastTouchWithoutFees
           supplySnapshots {
             id
             block
@@ -494,6 +490,16 @@ Here is an example query which fetches all information about all G-UNI Positions
             block
             feesEarned0
             feesEarned1
+          }
+          latestInfo {
+            sqrtPriceX96
+            reserves0
+            reserves1
+            leftover0
+            leftover1
+            unclaimedFees0
+            unclaimedFees1
+            block
           }
         }
       }
@@ -511,22 +517,23 @@ Here is an example query which fetches all information about all G-UNI Positions
 `upperTick`: current upper tick of G-UNI Position\
 `totalSupply`: current total supply of G-UNI token\
 `positionId`: Uniswap V3 ID of the G-UNI position\
-`lastTouchWithoutFees`: start block of fee accounting\
 `supplySnapshots`: snapshots of the supply when it changes\
-`feeSnapshots`: snapshots of fees earned\
+`feeSnapshots`: snapshots of fees earned&#x20;
+
+`latestInfo:` has up to date info about the position in a recent block.\
 \
-The `supplySnapshots`, `feeSnapshots`, and `lastTouchWithoutFees` can be ingested together to produce an estimated APR for fees generated by the position.\
+The `supplySnapshots`, `feeSnapshots`, and `latestInfo` can be ingested together to produce an estimated APR for fees generated by the position.\
 \
 APR is calculated from these values in the following way:\
 \
-1\. We use the `supplySnapshots` to calculate the time weighted average value of reserves `Vr` since the block when we started tracking fees (`lastTouchWithoutFees`). This value includes all fees earned.
+1\. We use the `supplySnapshots` to calculate the time weighted average value of reserves `Vr`. This value includes all fees earned.
 
-2\. We use the `feeSnapshots`to add up all the fees earned since `lastTouchWithoutFees` to generate the total value of fees earned `Vf` .\
+2\. We use the `feeSnapshots`to add up all the fees earned to generate the total value of fees earned `Vf` .\
 \
 3\. We compute APR as `Vf / (Vr - Vf)` (when `Vr > Vf` ). In rare cases when `Vf > Vr` i.e. feesEarned are larger than the time weighted average reserves, one can simply use`Vf/Vr`
 
 An npm library for these APR calculations is forthcoming but an example of the calculation is here: [https://github.com/kassandraoftroy/apr-script/blob/main/index.ts](https://github.com/superarius/apr-script/blob/main/index.ts)\
-\\
+
 
 ## GUniPool
 
