@@ -1,11 +1,10 @@
 # Contract Addresses
 
-### Core / Periphery&#x20;
+### Core / Periphery
 
 | Contract         | Address                                    |
 | ---------------- | ------------------------------------------ |
 | G-UNI Factory    | 0xEA1aFf9dbFfD1580F6b81A3ad3589E66652dB7D9 |
-| G-UNI Router02   | 0x14E6D67F824C3a7b4329d3228807f8654294e4bd |
 | G-UNI Resolver02 | 0x0317650Af6f184344D7368AC8bB0bEbA5EDB214a |
 
 ### Pools
