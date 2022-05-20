@@ -1,35 +1,29 @@
 ---
 description: >-
-  G-UNI is a framework for Uniswap V3 Positions wrapped into fractionalized,
-  fungible, auto-fee-compounding ERC20 tokens. Customizable LP strategies for a
-  pool can be implemented via the 'manager' role.
+  Arrakis is a decentralized market making platform that specializes in
+  concentrated & active liquidity management to create deep liquidity for
+  projects on decentralized exchanges.
 ---
 
-# Documentation
-
-## Contribute to the docs
-
-Feel free to help improving the docs by doing a PR to this repo:
-
-{% embed url="https://github.com/gelatodigital/g-uni-docs" %}
+# Arrakis Finance
 
 ## Introduction
 
-G-UNI is a generic ERC20 wrapper on a Uniswap V3 Position. Pools with any price bounds on any Uniswap V3 pair can be deployed via the `GUniFactory` instantiating a tokenized V3 Position. When liquidity is added into the pool, G-UNI tokens are minted and credited to the provider. Inversely, G-UNI tokens can be burned to redeem that proportion of the pool's V3 position liquidity and fees earned. Thus, G-UNI tokens represent proportional ownership (or "shares") of the underlying Uniswap V3 position. Similar to the Uniswap V2 LP experience, anyone can add liquidity to or remove liquidity from a G-UNI Pool, and can earn their portion of the fees generated just by holding the fungible tokens.\
+Arrakis v1 is a generic ERC20 wrapper on a Uniswap V3 Position. Pools with any price bounds on any Uniswap V3 pair can be deployed via the `ArrakisFactory` instantiating a tokenized V3 Position. When liquidity is added into the pool, Arrakis vault tokens are minted and credited to the provider. Inversely, Arrakis tokens can be burned to redeem that proportion of the pool's V3 position liquidity and fees earned. Thus, Arrakis tokens represent proportional ownership (or "shares") of the underlying Uniswap V3 position. Similar to the Uniswap V2 LP experience, anyone can add liquidity to or remove liquidity from a Arrakis Pool, and can earn their portion of the fees generated just by holding the fungible tokens.\
 \
-Some G-UNI pools may have a special privileged `manager` role (see the `createManagedPool` and  `Manager Functions` sections).
+Some Arrakis vaults may have a special privileged `manager` role (see the `createManagedVault` and  `Manager Functions` sections).
 
 ## GUniFactory
 
-The `GUniFactory`[ smart contract](https://etherscan.io/address/0xea1aff9dbffd1580f6b81a3ad3589e66652db7d9) governs over the creation of G-UNI Pools. In theory, any account or smart contract can create a G-UNI Pool via the factory by calling `createPool`. This creates a tokenized UniswapV3 Position with a given immutable price range on the token pair and fee tier of your choice. Anyone can now participate as an LP in that range, by adding liquidity into this position and minting G-UNI tokens.
+The `ArrakisFactory`[ smart contract](https://etherscan.io/address/0xea1aff9dbffd1580f6b81a3ad3589e66652db7d9) governs over the creation of Arrakis Vaults. In theory, any account or smart contract can create a Arrakis Pool via the factory by calling `createVault`. This creates a tokenized UniswapV3 Position with a given immutable price range on the token pair and fee tier of your choice. Anyone can now participate as an LP in that range, by adding liquidity into this position and minting Arrakis tokens.
 
 ### createPool
 
-Deploy a G-UNI Pool on the Uniswap V3 pair and with the Position parameters of your choosing.
+Deploy a Arrakis Vault on the Uniswap V3 pair and with the Position parameters of your choosing.
 
 {% code title="GUniFactory.sol" %}
 ```bash
-    function createPool(
+    function createVault(
         address tokenA,
         address tokenB,
         uint24 uniFee,
@@ -53,13 +47,13 @@ The `lowerTick` and `upperTick`:\
 2\. MUST be integers divisible by the tickSpacing of the Uniswap pair.
 {% endhint %}
 
-Returns: Address of newly deployed G-UNI Pool ERC20 contract (proxied).\
+Returns: Address of newly deployed Arrakis Pool ERC20 contract (proxied).\
 \
-To have full verification and functionality on etherscan (read/write methods) [verify the proxy contract](https://etherscan.io/proxyContractChecker). Etherscan will recognize the contract address as an ERC20 token and generate the token page after minting of the first G-UNI tokens.
+To have full verification and functionality on etherscan (read/write methods) [verify the proxy contract](https://etherscan.io/proxyContractChecker). Etherscan will recognize the contract address as an ERC20 token and generate the token page after minting of the first Arrakis tokens.
 
-### createManagedPool&#x20;
+### createManagedVault&#x20;
 
-The simplest type of G-UNI pool to create is via the `createPool` method above, which creates an immutable G-UNI pool that no account has special privileges for. If you create a pool via the [sorbet UI](https://sorbet.finance) this is indeed the type of pool you create. However G-UNI pools are further customizable and can be used to implement tokenized _dynamic strategies_ on top of Uniswap V3. To do this one needs to create a "managed" G-UNI pool, which creates a pool with a privileged manager role with the ability to `executiveRebalance` the position moving the liquidity to a new range on that Uniswap V3 token pair. Via this manager functionality arbitrary rebalancing strategies can be implemented.
+The simplest type of Arrakis vault to create is via the `createVault` method above, which creates an immutable Arrakis vault that no account has special privileges for. If you create a pool via the [sorbet UI](https://sorbet.finance) this is indeed the type of pool you create. However Arrakis Vaults are further customizable and can be used to implement tokenized _dynamic strategies_ on top of Uniswap V3. To do this one needs to create a "managed" Arrakis Vault, which creates a pool with a privileged manager role with the ability to `executiveRebalance` the position moving the liquidity to a new range on that Uniswap V3 token pair. Via this manager functionality arbitrary rebalancing strategies can be implemented.
 
 {% code title="GUniFactory.sol" %}
 ```
@@ -85,7 +79,7 @@ Arguments:
 
 ## GUniResolver02
 
-The GUniResolver02 [smart contract](https://etherscan.io/address/0x0317650Af6f184344D7368AC8bB0bEbA5EDB214a#code) is a library of simple helper methods for G-UNI positions. When exposing a UI for users to addLiquidity to G-UNI one may want to allow users to enter the pool with any amount of either asset using the `rebalanceAndAddLiquidity` Router method. However the swap parameters passed as argument to this function must be carefully chosen to deposit maximal liquidity and produce the least leftover (any leftover is returned to `msg.sender` ). This resolver contract exposes a helper for just that.
+The GUniResolver02 [smart contract](https://etherscan.io/address/0x0317650Af6f184344D7368AC8bB0bEbA5EDB214a#code) is a library of simple helper methods for Arrakis positions. When exposing a UI for users to addLiquidity to Arrakis one may want to allow users to enter the pool with any amount of either asset using the `rebalanceAndAddLiquidity` Router method. However the swap parameters passed as argument to this function must be carefully chosen to deposit maximal liquidity and produce the least leftover (any leftover is returned to `msg.sender` ). This resolver contract exposes a helper for just that.
 
 ### getRebalanceParams
 
@@ -108,7 +102,7 @@ Generate the (roughly approximated) swap parameters for a `rebalanceAndAddLiquid
 
 Arguments:
 
-* `pool` Address of G-UNI pool of interest
+* `pool` Address of Arrakis vault of interest
 * `amount0In` amount of token0 sender forwards to router
 * `amount1In` amount of token1 sender forwards to router
 * `price18Decimals` price ratio of `token1/token0` disregarding (normalizing by) token decimals and then expressed as a WAD (multiplied by `10^18`).
@@ -130,7 +124,7 @@ The manager is the most important and centrally trusted role in the GUniPool. It
 
 #### executiveRebalance
 
-By far the most important manager function is the `executiveRebalance` method on the `GUniPool`. This permissioned method is the only way to change the price range of the underlying Uniswap V3 Position. Manager accounts who control this function are the means by which custom rebalancing strategies can be built on top of G-UNI. These strategies can be implemented by governance (slow, but decentralized) or by some central managerial party (more responsive but requiring much more trust) and in the future the manager role can be granted to a Gelato automated smart contract so that they have a sophisticated LP strategy fully automated by Gelato (both reinvesting fees and in rebalancing ranges).
+By far the most important manager function is the `executiveRebalance` method on the `GUniPool`. This permissioned method is the only way to change the price range of the underlying Uniswap V3 Position. Manager accounts who control this function are the means by which custom rebalancing strategies can be built on top of Arrakis. These strategies can be implemented by governance (slow, but decentralized) or by some central managerial party (more responsive but requiring much more trust) and in the future the manager role can be granted to a Gelato automated smart contract so that they have a sophisticated LP strategy fully automated by Gelato (both reinvesting fees and in rebalancing ranges).
 
 {% code title="GUniPool.sol" %}
 ```bash
@@ -233,11 +227,11 @@ function renounceOwnership() public onlyManager
 ```
 {% endcode %}
 
-## G-UNI Subgraph
+## Arrakis Subgraph
 
-The G-UNI subgraph tracks relevant data for all G-UNI Positions created through the `GUniFactory` `createPool` method. Most relevant information about about a G-UNI position is indexed and queryable via the subgraph. Query URL is: [https://api.thegraph.com/subgraphs/name/gelatodigital/g-uni](https://api.thegraph.com/subgraphs/name/gelatodigital/g-uni)\
+The Arrakis subgraph tracks relevant data for all Arrakis Positions created through the `GUniFactory` `createPool` method. Most relevant information about about a Arrakis position is indexed and queryable via the subgraph. Query URL is: [https://api.thegraph.com/subgraphs/name/gelatodigital/g-uni](https://api.thegraph.com/subgraphs/name/gelatodigital/g-uni)\
 \
-Here is an example query which fetches all information about all G-UNI Positions:
+Here is an example query which fetches all information about all Arrakis Positions:
 
 ```bash
       query {
@@ -290,17 +284,17 @@ Here is an example query which fetches all information about all G-UNI Positions
 ```
 
 `id`: subgraph identifier for the pool (contract address)\
-`blockCreated`: block G-UNI position was deployed\
-`address`: contract address of G-UNI positions\
+`blockCreated`: block Arrakis position was deployed\
+`address`: contract address of Arrakis positions\
 `uniswapPool`: contract address of Uniswap V3 pair\
 `token0`: address of token0\
 `token1`: address of token1\
 `feeTier`: Uniswap V3 Pair fee tier (500, 3000, 1000)\
-`liquidity`: amount of liquidity currently in G-UNI position\
-`lowerTick`: current lower tick of G-UNI Position\
-`upperTick`: current upper tick of G-UNI Position\
-`totalSupply`: current total supply of G-UNI token\
-`positionId`: Uniswap V3 ID of the G-UNI position\
+`liquidity`: amount of liquidity currently in Arrakis position\
+`lowerTick`: current lower tick of Arrakis Position\
+`upperTick`: current upper tick of Arrakis Position\
+`totalSupply`: current total supply of Arrakis token\
+`positionId`: Uniswap V3 ID of the Arrakis position\
 `supplySnapshots`: snapshots of the supply when it changes\
 `feeSnapshots`: snapshots of fees earned&#x20;
 
@@ -322,10 +316,10 @@ An npm library for these APR calculations is forthcoming but an example of the c
 ## GUniPool
 
 {% hint style="danger" %}
-Methods on the `GUniPool`contract are low level and are **NOT RECOMMENDED** for direct interaction by end users unless they know why and what they are doing. For standard mint/burn interaction with G-UNI see `GUniRouter`
+Methods on the `GUniPool`contract are low level and are **NOT RECOMMENDED** for direct interaction by end users unless they know why and what they are doing. For standard mint/burn interaction with Arrakis see `ArrakisRouter`
 {% endhint %}
 
-The `GUniPool` [smart contract](https://etherscan.io/address/0x6dfc8b880d6c1043bebb6eb2346913185ce1b48b) is the core implementation that powers the G-UNI protocol (all G-UNI token proxy contracts point to this implementation). It is an extension of the ERC20 interface so all normal ERC20 token functions apply, as well as a number of custom methods particular to G-UNI which will be outlined below. Most of the methods on the GUniPool are low level and end users should likely be interacting with peripheral contracts rather than directly with these low level methods. Nevertheless these methods are publicly exposed and functional.
+The `ArrakisVault` [smart contract](https://etherscan.io/address/0x6dfc8b880d6c1043bebb6eb2346913185ce1b48b) is the core implementation that powers the Arrakis protocol (all Arrakis token proxy contracts point to this implementation). It is an extension of the ERC20 interface so all normal ERC20 token functions apply, as well as a number of custom methods particular to Arrakis which will be outlined below. Most of the methods on the ArrakisVault are low level and end users should likely be interacting with peripheral contracts rather than directly with these low level methods. Nevertheless these methods are publicly exposed and functional.
 
 ### mint
 
@@ -355,7 +349,7 @@ The `GUniPool` [smart contract](https://etherscan.io/address/0x6dfc8b880d6c1043b
 
 ### getMintAmounts
 
-View method to compute the amount of G-UNI tokens minted (and exact amounts of token0 and token1 forwarded) from and `amount0Max` and `amount1Max`
+View method to compute the amount of Arrakis tokens minted (and exact amounts of token0 and token1 forwarded) from and `amount0Max` and `amount1Max`
 
 ```bash
     function getMintAmounts(uint256 amount0Max, uint256 amount1Max)
@@ -370,7 +364,7 @@ View method to compute the amount of G-UNI tokens minted (and exact amounts of t
 
 ### getUnderlyingBalances
 
-get the current underlying balances of the entire G-UNI Pool
+get the current underlying balances of the entire Arrakis Pool
 
 ```bash
     function getUnderlyingBalances()
@@ -399,7 +393,7 @@ Get the current underlying balances given a custom price (not simply taking the 
         )
 ```
 
-This function is useful for getting a fair unmanipulatable price of a G-UNI token for things like lending protocols (simply pass a time weighted average sqrtPrice to this function to get the unmanipulated underlying balances).
+This function is useful for getting a fair unmanipulatable price of a Arrakis token for things like lending protocols (simply pass a time weighted average sqrtPrice to this function to get the unmanipulated underlying balances).
 
 ### getPositionId
 
@@ -408,8 +402,8 @@ function getPositionID()
     external view returns (bytes32 positionID) 
 ```
 
-get the Identifier of the G-UNI position on the Uniswap V3 pair (useful for fetching data about the Position with the `positions` method on `UniswapV3Pool.sol`).
+get the Identifier of the Arrakis position on the Uniswap V3 pair (useful for fetching data about the Position with the `positions` method on `UniswapV3Pool.sol`).
 
 ## Contact
 
-Questions about integrating G-UNI? Join the Gelato [Telegram](https://t.me/therealgelatonetwork) or [Discord](https://discord.gg/ApbA39BKyJ) and find a dev or community manager to talk to! Email team@gelato.digital.
+Questions about integrating G-UNI? Join the Arrakis [Telegram](https://app.gitbook.com/o/-MGYxBRvIEmcAGZbDyDG/s/EupJ9ymQK5fwIT2mGucc/) or [Discord](https://discord.gg/arrakisfinance) and find a dev or community manager to talk to!&#x20;
