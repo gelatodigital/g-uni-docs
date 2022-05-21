@@ -4,29 +4,29 @@
 
 ### Mainnet
 
-| Contract       | Address                                    |
-| -------------- | ------------------------------------------ |
-| G-UNI Factory  | 0xEA1aFf9dbFfD1580F6b81A3ad3589E66652dB7D9 |
-| G-UNI Resolver | 0x0317650Af6f184344D7368AC8bB0bEbA5EDB214a |
-| G-UNI Router   | 0x513E0a261af2D33B46F98b81FED547608fA2a03d |
+| Contract         | Address                                    |
+| ---------------- | ------------------------------------------ |
+| Arrakis Factory  | 0xEA1aFf9dbFfD1580F6b81A3ad3589E66652dB7D9 |
+| Arrakis Resolver | 0x0317650Af6f184344D7368AC8bB0bEbA5EDB214a |
+| Arrakis Router   | 0x513E0a261af2D33B46F98b81FED547608fA2a03d |
 
 ### Polygon
 
-| Contract       | Address                                    |
-| -------------- | ------------------------------------------ |
-| G-UNI Factory  | 0x37265A834e95D11c36527451c7844eF346dC342a |
-| G-UNI Resolver | 0x3638fc820c22b9ecd631943Bc7d5591C0004C7b2 |
-| G-UNI Router   | 0x477E509B9d08862baEb8Ab69e901Ae72b13efcA0 |
+| Contract         | Address                                    |
+| ---------------- | ------------------------------------------ |
+| Arrakis Factory  | 0x37265A834e95D11c36527451c7844eF346dC342a |
+| Arrakis Resolver | 0x3638fc820c22b9ecd631943Bc7d5591C0004C7b2 |
+| Arrakis Router   | 0x477E509B9d08862baEb8Ab69e901Ae72b13efcA0 |
 
 ### Optimism
 
-| Contract       | Address                                    |
-| -------------- | ------------------------------------------ |
-| G-UNI Factory  | 0x2845c6929d621e32B7596520C8a1E5a37e616F09 |
-| G-UNI Resolver | 0xd2Bb190dD88e7Af5DF176064Ec42f6dfA8672F40 |
-| G-UNI Router   | 0xc56f04EC20dAD27c0f4701b14977C2DbE85142BA |
+| Contract         | Address                                    |
+| ---------------- | ------------------------------------------ |
+| Arrakis Factory  | 0x2845c6929d621e32B7596520C8a1E5a37e616F09 |
+| Arrakis Resolver | 0xd2Bb190dD88e7Af5DF176064Ec42f6dfA8672F40 |
+| Arrakis Router   | 0xc56f04EC20dAD27c0f4701b14977C2DbE85142BA |
 
-### Pools
+### Vaults
 
 | Contract                                                                                                                   | feeTier | Token 1                                                                          | Token 2                                                                          |
 | -------------------------------------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
