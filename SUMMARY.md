@@ -4,5 +4,5 @@
 * [Mission](mission.md)
 * [Arrakis Vaults - Use Cases](arrakis-vaults-use-cases.md)
 * [$SPICE](usdspice.md)
-* [Developer Docs](<README (1).md>)
+* [Developer Docs](developer-docs.md)
 * [Contract Addresses](pool-addresses.md)
