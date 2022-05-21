@@ -1,9 +1,26 @@
 ---
 description: >-
-  Arrakis is a decentralized market making platform that specializes in
-  concentrated & active liquidity management to create deep liquidity for
-  projects on decentralized exchanges.
+  Arrakis is a web3’s liquidity layer, which at its core acts as a decentralized
+  market-making platform enabling projects to create deep liquidity for their
+  tokens on decentralized exchanges.
 ---
 
-# Arrakis Finance
+# Welcome to Arrakis
 
+![](.gitbook/assets/1\_JqKaqgK3dZpwY2NW45l2lw.jpeg)
+
+## Sections
+
+* [Mission](mission.md)
+* [Arrakis Vaults - Use Cases](arrakis-vaults-use-cases.md)
+* [$SPICE](usdspice.md)
+* ****[**D**eveloper Docs](<README (1).md>)
+* [Contract Addresses](pool-addresses.md)
+
+## Useful links
+
+Telegram: [https://t.me/arrakisfinance](https://t.me/arrakisfinance)
+
+Twitter: [https://twitter.com/ArrakisFinance](https://twitter.com/ArrakisFinance)
+
+Discord: [https://discord.gg/arrakisfinance](https://discord.gg/arrakisfinance)
