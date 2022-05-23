@@ -34,7 +34,7 @@ Arguments:
 * `tokenB` The other token in the Uniswap V3 pair
 * `uniFee` Fee tier of the Uniswap V3 pair (100, 500, 3000, 10000)
 * `manager` Account which is initial "manager" (ability to rebalance range). If you want vault position to be entirely immutable (position range can never change) set manager to Zero Address.
-* `managerFee` cut off fees earned by manager in BPS.
+* `managerFee` % cut of fees earned that accrue to manager, in Basis Points (9750 is max since 2.5% of earned fees already accrue to Arrakis Protocol).
 * `lowerTick` Initial lower price bound for the position, represented as a Uniswap V3 tick.
 * `upperTick` Initial upper price bound for the position, represented as a Uniswap V3 tick.
 
@@ -48,7 +48,7 @@ Returns: Address of newly deployed Arrakis Vault ERC20 contract (proxied).\
 \
 To have full verification and functionality on etherscan (read/write methods) [verify the proxy contract](https://etherscan.io/proxyContractChecker). Etherscan will recognize the contract address as an ERC20 token and generate the token page after minting of the first Arrakis tokens.
 
-
+In order for a new vault to be searchable on the \[arrakis beta ui]\(https://beta.arrakis.finance) list of vaults, the new vault needs to be whitelisted here: https://github.com/arrakisfinance/vaults-whitelist
 
 ## ArrakisResolver
 
@@ -155,7 +155,7 @@ Another important role of the `manager` is to configure the manager parameters i
 
 Arguments:
 
-* `newManagerFeeBPS` Change the cut of fees earned that the manager takes (in basis points, 9750 max since 2.5% of fees already go to Arrakis)
+* `newManagerFeeBPS` Change the cut of fees earned that accrue to manager in Basis Points (9750 max since 2.5% of fees go to Arrakis)
 * `newManagerTreasury` The treasury address where manager fees are auto withdrawn.
 * `newRebalanceBPS` The maximum percentage the auto fee reinvestment transaction cost can be compared to the fees earned in that feeToken. The percentage is given in Basis Points (where 10000 mean 100%). Example: if rebalanceBPS is 200 and the transaction fee is 10 USDC then the fees earned in USDC must be 500 UDSC or the transaction will revert.
 * `newSlippageBPS` The maximum percentage that the rebalance slippage can be from the TWAP.
