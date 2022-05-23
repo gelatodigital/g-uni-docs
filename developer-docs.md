@@ -4,13 +4,13 @@
 
 Arrakis V1 vaults are generic ERC20 wrappers on Uniswap V3 Positions. Vaults with any price bounds on any Uniswap V3 pair can be deployed via the `ArrakisFactory` instantiating a tokenized V3 Position. When liquidity is added into the vault, Arrakis vault tokens are minted and credited to the provider. Inversely, Arrakis tokens can be burned to redeem that proportion of the pool's V3 position liquidity and fees earned. Thus, Arrakis tokens represent proportional ownership (or "shares") of the underlying Uniswap V3 position. Similar to the Uniswap V2 LP experience, anyone can add liquidity to or remove liquidity from a Arrakis Vault, and can earn their portion of the fees generated just by holding the fungible tokens.\
 \
-Some Arrakis vaults may have a special privileged `manager` role (see the `createManagedVault` and  `Manager Functions` sections).
+Some Arrakis vaults may have a special privileged `manager` role (see the  `Manager Functions` sections).
 
 ## ArrakisFactory
 
-The `ArrakisFactory`[ smart contract](https://etherscan.io/address/0xea1aff9dbffd1580f6b81a3ad3589e66652db7d9) governs over the creation of Arrakis Vaults. In theory, any account or smart contract can create a Arrakis Vault via the factory by calling `createVault`. This creates a tokenized UniswapV3 Position with a given immutable price range on the token pair and fee tier of your choice. Anyone can now participate as an LP in that range, by adding liquidity into this position and minting Arrakis tokens.
+The `ArrakisFactory`[ smart contract](https://etherscan.io/address/0xea1aff9dbffd1580f6b81a3ad3589e66652db7d9) governs over the creation of Arrakis Vaults. In theory, any account or smart contract can create a Arrakis Vault via the factory by calling `deployVault`. This creates a tokenized UniswapV3 Position with a given initial price range on the token pair and fee tier of your choice. Anyone can now participate as an LP in that range, by adding liquidity into this position and minting Arrakis tokens. Whatever account is set as the manager role is the only account that may alter the price range of all the underlying vault liquidity with `executiveRebalance()`
 
-### createVault
+### deployVault
 
 Deploy a Arrakis Vault on the Uniswap V3 pair and with the Position parameters of your choosing.
 
@@ -20,6 +20,8 @@ Deploy a Arrakis Vault on the Uniswap V3 pair and with the Position parameters o
         address tokenA,
         address tokenB,
         uint24 uniFee,
+        address manager,
+        uint16 managerFee,
         int24 lowerTick,
         int24 upperTick
     ) external returns (address vault)
@@ -30,7 +32,9 @@ Arguments:
 
 * `tokenA` One of the tokens in the Uniswap V3 pair
 * `tokenB` The other token in the Uniswap V3 pair
-* `uniFee` Fee tier of the Uniswap V3 pair (500, 3000, 10000)
+* `uniFee` Fee tier of the Uniswap V3 pair (100, 500, 3000, 10000)
+* `manager` Account which is initial "manager" (ability to rebalance range). If you want vault position to be entirely immutable (position range can never change) set manager to Zero Address.
+* `managerFee` cut off fees earned by manager in BPS.
 * `lowerTick` Initial lower price bound for the position, represented as a Uniswap V3 tick.
 * `upperTick` Initial upper price bound for the position, represented as a Uniswap V3 tick.
 
@@ -44,35 +48,11 @@ Returns: Address of newly deployed Arrakis Vault ERC20 contract (proxied).\
 \
 To have full verification and functionality on etherscan (read/write methods) [verify the proxy contract](https://etherscan.io/proxyContractChecker). Etherscan will recognize the contract address as an ERC20 token and generate the token page after minting of the first Arrakis tokens.
 
-### createManagedVault&#x20;
 
-The simplest type of Arrakis vault to create is via the `createVault` method above, which creates an immutable Arrakis vault that no account has special privileges for. If you create a vault via the [Arrakis UI](https://beta.arrakis.finance/#/vaults) this is indeed the type of vault you create. However Arrakis Vaults are further customizable and can be used to implement tokenized _dynamic strategies_ on top of Uniswap V3. To do this one needs to create a "managed" Arrakis Vault, which creates a vault with a privileged manager role with the ability to `executiveRebalance` the position moving the liquidity to a new range on that Uniswap V3 token pair. Via this manager functionality arbitrary rebalancing strategies can be implemented.
 
-{% code title="ArrakisFactory.sol" %}
-```
-    function createManagedVault(
-        address tokenA,
-        address tokenB,
-        uint24 uniFee,
-        uint16 managerFee,
-        int24 lowerTick,
-        int24 upperTick
-    ) external returns (address vault)
-```
-{% endcode %}
+## ArrakisResolver
 
-Arguments:
-
-* `tokenA` One of the tokens in the Uniswap V3 pair
-* `tokenB` The other token in the Uniswap V3 pair
-* `uniFee` Fee tier of the Uniswap V3 pair (500, 3000, 10000)
-* `managerFee` The proportion of fees earned that `manager` takes as a cut in Basis Points (deployer address is initial manager). **Note: The managerFee can only be set to a non-zero value once (immutable afterwards)**&#x20;
-* `lowerTick` Initial lower price bound for the position, represented as a Uniswap V3 tick.
-* `upperTick` Initial upper price bound for the position, represented as a Uniswap V3 tick.
-
-## ArrakisResolver02
-
-The ArraisResolver02 [smart contract](https://etherscan.io/address/0x0317650Af6f184344D7368AC8bB0bEbA5EDB214a#code) is a library of simple helper methods for Arrakis positions. When exposing a UI for users to addLiquidity to Arrakis one may want to allow users to enter the vault with any amount of either asset using the `rebalanceAndAddLiquidity` Router method. However the swap parameters passed as argument to this function must be carefully chosen to deposit maximal liquidity and produce the least leftover (any leftover is returned to `msg.sender` ). This resolver contract exposes a helper for just that.
+The ArraisResolver [smart contract](https://etherscan.io/address/0x0317650Af6f184344D7368AC8bB0bEbA5EDB214a#code) is a library of simple helper methods for Arrakis positions. When exposing a UI for users to addLiquidity to Arrakis one may want to allow users to enter the vault with any amount of either asset using the `rebalanceAndAddLiquidity` Router method. However the swap parameters passed as argument to this function must be carefully chosen to deposit maximal liquidity and produce the least leftover (any leftover is returned to `msg.sender` ). This resolver contract exposes a helper for just that.
 
 ### getRebalanceParams
 
@@ -111,7 +91,7 @@ Because the price ratio often changes depending on the amount being swapped (sli
 
 ## Manager Functions
 
-Vaults created with `createManagedVault` are assigned a `manager` account who can configure the Gelato Executor meta-parameters and also can control and alter the range of the underlying Uniswap V3 position.
+Vaults created with a `manager` account who can configure the Gelato Executor meta-parameters and also can control and alter the range of the underlying Uniswap V3 position.
 
 The manager is the most important and centrally trusted role in the Vaults. It is the only role that has the power to potentially extract value from the principal invested or potentially grief the vault in a number of ways. One should only put funds into "managed" vaults if they have some information about the manager account: manager could be fully controlled by a DAO (token voting), or could simply be a project's multi-sig, or be locked in a smart contract that automates rebalances under a certain codified strategy, or be trusted by the user for some other reason.
 
@@ -159,27 +139,29 @@ To generate the swap parameters for an executive rebalance tx, simulate the enti
 A complete example of this calculation can be found in this [test file](https://github.com/gelatodigital/g-uni-v1-core/blob/feat/executive-rebalance-test/test/GUniPool.test.ts)
 {% endhint %}
 
-#### updateArrakisParams
+#### updateManagerParams
 
-Another important role of the `manager` is to configure the parameters that restrict the functionality of `Gelato Executors`. These parameters include how often Gelato bots can reinvest fees and withdraw manager fees, as well as other safety params like the slippage check. Only the manager can call `updateArrakisParams` .
+Another important role of the `manager` is to configure the manager parameters including those that restrict the functionality of `Gelato Executors`. These parameters include how often Gelato bots can reinvest fees and withdraw manager fees, as well as other safety params like the slippage check. Only the manager can call `updateManagerParams` .
 
 ```bash
-    function updateArrakisParams(
-        uint16 newRebalanceBPS,
-        uint16 newWithdrawBPS,
-        uint16 newSlippageBPS,
-        uint32 newSlippageInterval,
-        address newTreasury
+    function updateManagerParams(
+        int16 newManagerFeeBPS,
+        address newManagerTreasury,
+        int16 newRebalanceBPS,
+        int16 newSlippageBPS,
+        int32 newSlippageInterval
     ) external onlyManager {
 ```
 
 Arguments:
 
+* `newManagerFeeBPS` Change the cut of fees earned that the manager takes (in basis points, 9750 max since 2.5% of fees already go to Arrakis)
+* `newManagerTreasury` The treasury address where manager fees are auto withdrawn.
 * `newRebalanceBPS` The maximum percentage the auto fee reinvestment transaction cost can be compared to the fees earned in that feeToken. The percentage is given in Basis Points (where 10000 mean 100%). Example: if rebalanceBPS is 200 and the transaction fee is 10 USDC then the fees earned in USDC must be 500 UDSC or the transaction will revert.
-* `newWithdrawBPS` The maximum percentage the auto withdraw transaction fee can be compared to the amount withdrawn of that feeToken.
 * `newSlippageBPS` The maximum percentage that the rebalance slippage can be from the TWAP.
 * `newSlippageInterval` length of time in seconds for to compute the TWAP (time weighted average price). I.e. 300 means a 5 minute average price for the vault.
-* `newTreasury` The treasury address where manager fees are auto withdrawn.
+
+``
 
 #### transferOwnership
 
@@ -192,23 +174,19 @@ Standard transfer of the manager role to a new account.
 
 Arguments: `newOwner` the new account to act as manager.
 
-#### initializeManagerFee
+#### toggleRestrictedMint
 
-```bash
-function initializeManagerFee(uint16 _managerFeeBPS)
+```
+function toggleRestrictMint() external onlyManager
 ```
 
-Arguments: `_managerFeeBPS` the percent commission of fees earned to go to the manager account.
-
-{% hint style="warning" %}
-The manager fee can only be set to a non-zero value one time and then can never be changed (unless the manager role is renounced).
-{% endhint %}
+Make it so only the manager role can mint LP tokens. Useful for creating a "Wrapped" vault where LP token minting is restricted to the wrapper.
 
 #### renounceOwnership
 
 Burn the manager role and set all manager fees to 0.
 
-{% code title="Ar.sol" %}
+{% code title="" %}
 ```bash
 function renounceOwnership() public onlyManager
 ```
@@ -303,7 +281,7 @@ An npm library for these APR calculations is forthcoming but an example of the c
 ## ArrakisVault
 
 {% hint style="danger" %}
-Methods on the `ArrakisVault`contract are low level and are **NOT RECOMMENDED** for direct interaction by end users unless they know why and what they are doing. For standard mint/burn interaction with Arrakis see `ArrakisRouter`
+State Changing Methods on the `ArrakisVault`contract are low level and are **NOT RECOMMENDED** for direct interaction by end users unless they know why and what they are doing. For standard mint/burn interaction with Arrakis see `ArrakisRouter`
 {% endhint %}
 
 The `ArrakisVault` [smart contract](https://etherscan.io/address/0x6dfc8b880d6c1043bebb6eb2346913185ce1b48b) is the core implementation that powers the Arrakis protocol (all Arrakis token proxy contracts point to this implementation). It is an extension of the ERC20 interface so all normal ERC20 token functions apply, as well as a number of custom methods particular to Arrakis which will be outlined below. Most of the methods on the ArrakisVault are low level and end users should likely be interacting with peripheral contracts rather than directly with these low level methods. Nevertheless these methods are publicly exposed and functional.
