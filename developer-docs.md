@@ -48,7 +48,7 @@ Returns: Address of newly deployed Arrakis Vault ERC20 contract (proxied).\
 \
 To have full verification and functionality on etherscan (read/write methods) [verify the proxy contract](https://etherscan.io/proxyContractChecker). Etherscan will recognize the contract address as an ERC20 token and generate the token page after minting of the first Arrakis tokens.
 
-In order for a new vault to be searchable on the \[arrakis beta ui]\(https://beta.arrakis.finance) list of vaults, the new vault needs to be whitelisted here: https://github.com/arrakisfinance/vaults-whitelist
+In order for a new vault to be searchable on the [arrakis beta ui](https://beta.arrakis.finance) list of vaults, the new vault needs to be whitelisted ([make a pr here](https://github.com/arrakisfinance/vaults-whitelist))
 
 ## ArrakisResolver
 
