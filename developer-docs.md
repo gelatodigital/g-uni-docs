@@ -200,7 +200,7 @@ Here is an example query which fetches all information about all Arrakis Positio
 
 ```bash
       query {
-        vaults {
+        pools {
           id
           blockCreated
           manager
@@ -371,4 +371,4 @@ get the Identifier of the Arrakis position on the Uniswap V3 pair (useful for fe
 
 ## Contact
 
-Questions about integrating Arrakis? Join the Arrakis [Telegram](https://app.gitbook.com/o/-MGYxBRvIEmcAGZbDyDG/s/EupJ9ymQK5fwIT2mGucc/) or [Discord](https://discord.gg/arrakisfinance) and find a dev or community manager to talk to!&#x20;
+Questions about integrating Arrakis? Join the Arrakis [Telegram](broken-reference) or [Discord](https://discord.gg/arrakisfinance) and find a dev or community manager to talk to!&#x20;
