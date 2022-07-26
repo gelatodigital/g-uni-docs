@@ -13,8 +13,7 @@ description: >-
 
 * [Mission](mission.md)
 * [Arrakis Vaults - Use Cases](arrakis-vaults-use-cases.md)
-* [$SPICE](usdspice.md)
-* ****[**D**eveloper Docs](developer-docs.md)
+* ****[Developer Docs](developer-docs.md)
 * [Contract Addresses](pool-addresses.md)
 
 ## Useful links
