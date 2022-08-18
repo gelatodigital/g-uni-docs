@@ -13,13 +13,12 @@ In short, the Vaults are smart contracts which allow for projects or users to de
 Vaults interact with 2 users:
 
 * **Projects/Users**-  that provide the liquidity
-* **Managers**- Managers can be the Arrakis Strategies also known as the Bene-Geserit-Strategists, or external managers
+* **Managers**- Anyone can be a manager
 
-When a project or user deposits funds into the Vault they receive LP tokens back which represent their share of the overall Vault LP position.\
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+When a project or user deposits funds into the Vault they receive LP tokens back which represent their share of the overall Vault LP position.
 
-**Bene Gesserit Strategists:**&#x20;
+## **Bene Gesserit Strategists:**&#x20;
 
-Arrakis' vaults allow for anyone to be a manager, however the DAO also has its own Strategists, these are so called Bene Gesserits.
+Arrakis' vaults allow for anyone to be a manager, the Bene Gesserit Strategists are the first whitelisted  managers.
 
 These strategies are focused on optimising for long term sustainable deep liquidity for project tokens, to read in detail how strategies work see the [Strategy](manager-v1.md) page.
