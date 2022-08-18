@@ -12,9 +12,7 @@ The capabilities of these vaults are the following:
 * Fully non-custodial
 * Fully Fungible
 
-\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
-
-**Setting up a Vault**
+## Setting up a Vault
 
 1\) Launch a Uniswap V3 pair for your token and the base asset you would like to have your token trade against e.g. USDC or ETH
 
