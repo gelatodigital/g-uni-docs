@@ -6,8 +6,6 @@ The manager can specify the range that should be used, they can specify how to s
 
 ## **Bene Gesserit Strategy:**
 
-This is the Arrakis DAO generated strategy for the V1 vaults.
-
 For any project that wants deep liquidity and does not want to match the vaults themselves we offer the Bene Gesserit Strategy. First of all we discuss with the project what their goals are in terms of how long they want their liquidity, how deep they want it, and whether they are looking to deploy their own funds or want to run a liquidity mining scheme to attract outside capital. In case this sounds like you, please do reach out to us on our [discord](https://discord.gg/arrakisfinance).
 
 There after once the goals are aligned, the Bene Gesserit run Monte-Carlo simulations of price moves over the past months (length various on the above mentioned goals), these simulations are run in order to generate price range that has a 95% probability of staying in range for at least a few months (again dependent on the goals the project has). Each week a vault rebalancing meeting is held where all vaults are looked at in regards to recent price movements, Monte Carlo simulations are re-ran to see what the price bounds would be if the liquidity providing would be started fresh, decisions would be made whether a rebalance of the LP position should be made. A rebalance is usually only opted in for when inventory becomes very one sided, and risk of going out of range is paramount. The idea is always to rebalance as gently as possible, meaning to "swap" as little as possible, so as not to be making to opinionated trading decisions.&#x20;
