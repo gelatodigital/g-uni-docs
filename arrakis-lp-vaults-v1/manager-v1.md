@@ -18,12 +18,7 @@ There after once the goals are aligned, the Bene Gesserit run Monte-Carlo simula
 
 In the case of the Bene Gesserit Strategy, the manager account is governed by a multisig that can only move the range with a 3/6 sign amount.&#x20;
 
-These Multisigners are:\
-Kassandra (CTO)- [https://twitter.com/kassandraETH](https://twitter.com/kassandraETH)\
-Hilmar Orth (Head Strategy)- [https://twitter.com/hilmarxo](https://twitter.com/hilmarxo)\
-Luis (Legendary Member Gelato)- [https://twitter.com/gitpusha](https://twitter.com/gitpusha)\
-Shankinson (Head of Bene Gesserit)\
-Matthieu (Lead Smart Contract)
+
 
 
 
