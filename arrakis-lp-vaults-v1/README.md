@@ -19,6 +19,6 @@ When a project or user deposits funds into the Vault they receive LP tokens back
 
 ## **Bene Gesserit Strategists:**&#x20;
 
-Arrakis' vaults allow for anyone to be a manager, the Bene Gesserit Strategists are the first whitelisted managers.
+Arrakis' vaults allow for anyone to be a manager, the Bene Gesserit Strategists are the first whitelisted  managers.
 
-These strategies are focused on optimising for long term sustainable deep liquidity for project tokens, to read in detail how these full autonomous strategies work see the [Strategy](manager-v1.md) page.
+These strategies are focused on optimising for long term sustainable deep liquidity for project tokens, to read in detail how strategies work see the [Strategy](manager-v1.md) page.
