@@ -15,9 +15,10 @@ Vaults interact with 2 users:
 * **Projects/Users**-  that provide the liquidity
 * **Managers**- Managers can be the Arrakis Strategies also known as the Bene-Geserit-Strategists, or external managers
 
-When a project or user deposits funds into the Vault they receive LP tokens back which represent their share of the overall Vault LP position.
+When a project or user deposits funds into the Vault they receive LP tokens back which represent their share of the overall Vault LP position.\
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
-## **Bene Gesserit Strategists:**&#x20;
+**Bene Gesserit Strategists:**&#x20;
 
 Arrakis' vaults allow for anyone to be a manager, however the DAO also has its own Strategists, these are so called Bene Gesserits.
 

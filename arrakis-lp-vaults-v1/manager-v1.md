@@ -4,7 +4,7 @@ The manager account within the vault is completely permissionless, anyone and ev
 
 The manager can specify the range that should be used, they can specify how to shift the liquidity of the vault around, in order to do this they simply specify the new price bounds, and also specify the amount they want to swap in order to rebalance the inventory so that more funds fit into the token ratio needed for the new position.&#x20;
 
-**Bene Gesserit Strategy:**
+## **Bene Gesserit Strategy:**
 
 This is the Arrakis DAO generated strategy for the V1 vaults.
 
